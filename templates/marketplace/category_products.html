@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - Products{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="category-header mb-4">
+                <h2>{{ category.name }}</h2>
+                {% if category.description %}
+                    <p class="text-muted">{{ category.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">Products in {{ category.name }}</h5>
+                <span class="text-muted">{{ page_obj.paginator.count }} products found</span>
+            </div>
+            
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for product in products %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if product.main_image %}
+                            <img src="{{ product.main_image.url }}" class="card-img-top" alt="{{ product.name }}">
+                        {% else %}
+                            <img src="{% static 'img/no-image.svg' %}" class="card-img-top" alt="No Image Available">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.description|truncatewords:10 }}</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-primary">${{ product.price }}</span>
+                                {% if product.is_customizable %}
+                                    <span class="badge bg-info">Customizable</span>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">by {{ product.seller.business_name }}</small>
+                                <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-outline-primary">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <p class="text-center">No products found in this category.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if page_obj.paginator.num_pages > 1 %}
+            <div class="mt-4 d-flex justify-content-center">
+                <nav>
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"4" %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

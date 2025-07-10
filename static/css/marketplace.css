@@ -1,0 +1,207 @@
+/* Marketplace Custom Styles */
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.product-card {
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.filter-sidebar {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.price-range-inputs {
+    display: flex;
+    gap: 10px;
+}
+
+.price-range-inputs input {
+    flex: 1;
+}
+
+.product-grid {
+    min-height: 400px;
+}
+
+.badge-custom {
+    font-size: 0.75em;
+}
+
+.seller-info {
+    background-color: #f8f9fa;
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.customization-option {
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f8f9fa;
+}
+
+.product-images .main-image img {
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.image-thumbnails .thumbnail-img {
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.image-thumbnails .thumbnail-img:hover {
+    border-color: #007bff;
+}
+
+.filter-form .form-control,
+.filter-form .form-select {
+    margin-bottom: 10px;
+}
+
+.star-rating {
+    color: #ffc107;
+}
+
+.review-item {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.pagination {
+    justify-content: center;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filter-sidebar {
+        margin-bottom: 20px;
+    }
+    
+    .product-grid .col {
+        margin-bottom: 20px;
+    }
+    
+    .product-images .main-image img {
+        max-height: 300px;
+    }
+}
+
+/* Search bar styles */
+.search-bar {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Product status badges */
+.stock-badge.in-stock {
+    background-color: #28a745;
+}
+
+.stock-badge.out-of-stock {
+    background-color: #dc3545;
+}
+
+.stock-badge.low-stock {
+    background-color: #ffc107;
+    color: #000;
+}
+
+/* Customization form styles */
+.customization-form {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.customization-preview {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+/* Price display */
+.price-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+/* Button styles */
+.btn-add-to-cart {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+    font-weight: bold;
+}
+
+.btn-add-to-cart:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+/* Category chips */
+.category-chip {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #e9ecef;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    margin: 2px;
+    text-decoration: none;
+    color: #495057;
+    transition: background-color 0.2s;
+}
+
+.category-chip:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.loading-animation {
+    animation: pulse 1.5s infinite;
+}

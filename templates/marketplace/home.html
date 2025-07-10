@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Marketplace{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="mb-4">
+                <h5>Filters</h5>
+                <form method="get">
+                    <div class="mb-3">
+                        <label for="id_search" class="form-label">Search</label>
+                        <input type="text" name="search" id="id_search" class="form-control" value="{{ search_query }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_category" class="form-label">Category</label>
+                        <select name="category" id="id_category" class="form-select">
+                            <option value="">All</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {% if category.id|stringformat:"s" == selected_category %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_price" class="form-label">Price Range</label>
+                        <input type="number" name="min_price" id="id_min_price" class="form-control" placeholder="Min" value="{{ min_price }}">
+                        <input type="number" name="max_price" id="id_max_price" class="form-control mt-1" placeholder="Max" value="{{ max_price }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_location" class="form-label">Location</label>
+                        <input type="text" name="location" id="id_location" class="form-control" value="{{ selected_location }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_business_type" class="form-label">Business Type</label>
+                        <select name="business_type" id="id_business_type" class="form-select">
+                            <option value="">All</option>
+                            {% for type in business_types %}
+                                <option value="{{ type }}" {% if type == selected_business_type %}selected{% endif %}>
+                                    {{ type|title }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="customizable" value="true" id="id_customizable" {% if customizable == 'true' %}checked{% endif %}>
+                        <label class="form-check-label" for="id_customizable">
+                            Customizable Products
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">Products</h5>
+                <div>
+                    <label class="form-label me-2 mb-0">Sort by:</label>
+                    <select name="sort" form="filter-form" class="form-select d-inline w-auto">
+                        <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
+                        <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Lowest Price</option>
+                        <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Highest Price</option>
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for product in products %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if product.main_image %}
+                        <img src="{{ product.main_image.url }}" class="card-img-top" alt="{{ product.name }}">
+                        {% else %}
+                        <img src="{% static 'img/no-image.svg' %}" class="card-img-top" alt="No Image Available">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.description|truncatewords:10 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-primary">${{ product.price }}</span>
+                                <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-outline-primary">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-center">No products available matching your criteria.</p>
+                {% endfor %}
+            </div>
+
+            <div class="mt-4 d-flex justify-content-center">
+                <nav>
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"4" %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

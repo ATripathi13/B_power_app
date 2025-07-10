@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Seller Dashboard - {{ seller.business_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-tachometer-alt"></i> Seller Dashboard</h2>
+                    <p class="text-muted">Welcome back, {{ seller.business_name }}!</p>
+                </div>
+                <div>
+                    {% if seller.approval_status == 'approved' %}
+                        <span class="badge bg-success fs-6"><i class="fas fa-check-circle"></i> Approved</span>
+                    {% elif seller.approval_status == 'pending' %}
+                        <span class="badge bg-warning fs-6"><i class="fas fa-clock"></i> Pending Approval</span>
+                    {% else %}
+                        <span class="badge bg-danger fs-6"><i class="fas fa-times-circle"></i> Rejected</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ total_products }}</h4>
+                            <p class="mb-0">Total Products</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-box fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ orders.count }}</h4>
+                            <p class="mb-0">Total Orders</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-shopping-cart fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ pending_orders }}</h4>
+                            <p class="mb-0">Pending Orders</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ seller.verified|yesno:"Yes,No" }}</h4>
+                            <p class="mb-0">Verified Status</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Recent Products -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-box"></i> Recent Products</h5>
+                    <a href="{% url 'marketplace:add_product' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Add Product
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if products %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Product Name</th>
+                                        <th>Category</th>
+                                        <th>Selling Price</th>
+                                        <th>Stock</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in products %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ product.name }}</strong>
+                                            {% if product.is_customizable %}
+                                                <span class="badge bg-info">POD</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ product.category.name }}</td>
+                                        <td>₹{{ product.selling_price }}</td>
+                                        <td>
+                                            {% if product.stock_quantity > 10 %}
+                                                <span class="badge bg-success">{{ product.stock_quantity }}</span>
+                                            {% elif product.stock_quantity > 0 %}
+                                                <span class="badge bg-warning">{{ product.stock_quantity }}</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Out of Stock</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if product.approval_status == 'approved' %}
+                                                <span class="badge bg-success">Approved</span>
+                                            {% elif product.approval_status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-box fa-3x text-muted mb-3"></i>
+                            <h5>No Products Yet</h5>
+                            <p class="text-muted">Start by adding your first product to the marketplace.</p>
+                            <a href="{% url 'marketplace:add_product' %}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Your First Product
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Orders -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-shopping-cart"></i> Recent Orders</h5>
+                </div>
+                <div class="card-body">
+                    {% if orders %}
+                        {% for order in orders %}
+                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                            <div>
+                                <h6 class="mb-1">{{ order.order_number }}</h6>
+                                <small class="text-muted">{{ order.buyer.name }}</small>
+                                <br>
+                                <small class="text-muted">{{ order.created_at|date:"M d, Y" }}</small>
+                            </div>
+                            <div class="text-end">
+                                <strong>₹{{ order.total_amount }}</strong>
+                                <br>
+                                {% if order.status == 'pending' %}
+                                    <span class="badge bg-warning">{{ order.get_status_display }}</span>
+                                {% elif order.status == 'confirmed' %}
+                                    <span class="badge bg-success">{{ order.get_status_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-info">{{ order.get_status_display }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                            <h6>No Orders Yet</h6>
+                            <p class="text-muted small">Orders will appear here when customers purchase your products.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Business Information -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-building"></i> Business Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Business Name:</strong> {{ seller.business_name }}</p>
+                            <p><strong>Owner Name:</strong> {{ seller.owner_name }}</p>
+                            <p><strong>GSTIN:</strong> {{ seller.gstin }}</p>
+                            <p><strong>Business Type:</strong> {{ seller.get_business_type_display }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Phone:</strong> {{ seller.phone }}</p>
+                            <p><strong>Location:</strong> {{ seller.location }}</p>
+                            <p><strong>Turnover:</strong> ₹{{ seller.turnover }} Crores</p>
+                            <p><strong>Bank:</strong> {{ seller.bank_name }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if seller.approval_status == 'rejected' and seller.rejection_reason %}
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Rejection Reason:</h6>
+                            <p class="mb-0">{{ seller.rejection_reason }}</p>
+                        </div>
+                    {% elif seller.approval_status == 'pending' %}
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-clock"></i> Pending Approval</h6>
+                            <p class="mb-0">Your seller account is under review. You'll be notified once approved.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

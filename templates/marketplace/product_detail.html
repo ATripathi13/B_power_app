@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Product Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="product-images">
+                {% if product.images.all %}
+                    <div class="main-image mb-3">
+                        <img src="{{ product.main_image.url }}" class="img-fluid rounded" id="mainImage" alt="{{ product.name }}">
+                    </div>
+                    <div class="image-thumbnails d-flex">
+                        {% for image in product.images.all %}
+                            <img src="{{ image.image.url }}" class="img-thumbnail me-2 thumbnail-img" 
+                                 style="width: 80px; height: 80px; cursor: pointer;" 
+                                 onclick="changeMainImage('{{ image.image.url }}')" 
+                                 alt="{{ image.alt_text }}">
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <img src="{% static 'img/no-image.svg' %}" class="img-fluid rounded" alt="No Image Available">
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <h1>{{ product.name }}</h1>
+            <p class="text-muted">by <a href="{% url 'marketplace:seller_products' product.seller.id %}">{{ product.seller.business_name }}</a></p>
+            
+            <div class="mb-3">
+                <span class="h3 text-primary">${{ product.price }}</span>
+                {% if product.in_stock %}
+                    <span class="badge bg-success ms-2">In Stock ({{ product.stock_quantity }})</span>
+                {% else %}
+                    <span class="badge bg-danger ms-2">Out of Stock</span>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <strong>Category:</strong> 
+                <a href="{% url 'marketplace:category_products' product.category.id %}" class="text-decoration-none">
+                    {{ product.category.name }}
+                </a>
+            </div>
+            
+            <div class="mb-3">
+                <strong>Location:</strong> {{ product.seller.location }}
+            </div>
+            
+            <div class="mb-3">
+                <strong>Business Type:</strong> {{ product.seller.get_business_type_display }}
+            </div>
+            
+            <div class="mb-3">
+                <strong>Minimum Order:</strong> {{ product.minimum_order_quantity }} units
+            </div>
+            
+            {% if product.is_customizable and customizations %}
+            <div class="mb-4">
+                <h5>Customization Options</h5>
+                <form id="customizationForm">
+                    {% for customization in customizations %}
+                    <div class="mb-3">
+                        <label class="form-label">
+                            {{ customization.name }}
+                            {% if customization.is_required %}<span class="text-danger">*</span>{% endif %}
+                            {% if customization.additional_cost > 0 %}
+                                <small class="text-muted">(+${{ customization.additional_cost }})</small>
+                            {% endif %}
+                        </label>
+                        
+                        {% if customization.customization_type == 'text' %}
+                            <input type="text" class="form-control" name="custom_{{ customization.id }}" 
+                                   {% if customization.is_required %}required{% endif %}>
+                        {% elif customization.customization_type == 'color' %}
+                            <select class="form-select" name="custom_{{ customization.id }}" 
+                                    {% if customization.is_required %}required{% endif %}>
+                                <option value="">Select a color</option>
+                                {% for option in customization.options.colors %}
+                                    <option value="{{ option }}">{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                        {% elif customization.customization_type == 'size' %}
+                            <select class="form-select" name="custom_{{ customization.id }}" 
+                                    {% if customization.is_required %}required{% endif %}>
+                                <option value="">Select a size</option>
+                                {% for option in customization.options.sizes %}
+                                    <option value="{{ option }}">{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                        {% elif customization.customization_type == 'logo' %}
+                            <input type="file" class="form-control" name="custom_{{ customization.id }}" 
+                                   accept="image/*" {% if customization.is_required %}required{% endif %}>
+                        {% endif %}
+                        
+                        {% if customization.description %}
+                            <small class="form-text text-muted">{{ customization.description }}</small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </form>
+            </div>
+            {% endif %}
+            
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" id="quantity" class="form-control" value="{{ product.minimum_order_quantity }}" 
+                       min="{{ product.minimum_order_quantity }}" max="{{ product.stock_quantity }}">
+            </div>
+            
+            <div class="d-grid gap-2">
+                {% if product.in_stock %}
+                    <button class="btn btn-primary btn-lg" onclick="addToCart()">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="contactSeller()">
+                        <i class="fas fa-envelope"></i> Contact Seller
+                    </button>
+                {% else %}
+                    <button class="btn btn-secondary btn-lg" disabled>
+                        Out of Stock
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12">
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <button class="nav-link active" id="nav-description-tab" data-bs-toggle="tab" data-bs-target="#nav-description" type="button" role="tab">
+                        Description
+                    </button>
+                    <button class="nav-link" id="nav-reviews-tab" data-bs-toggle="tab" data-bs-target="#nav-reviews" type="button" role="tab">
+                        Reviews {% if reviews %}({{ reviews.count }}){% endif %}
+                    </button>
+                    <button class="nav-link" id="nav-seller-tab" data-bs-toggle="tab" data-bs-target="#nav-seller" type="button" role="tab">
+                        Seller Info
+                    </button>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-description" role="tabpanel">
+                    <div class="p-3">
+                        <p>{{ product.description|linebreaks }}</p>
+                        {% if product.tags %}
+                            <div class="mt-3">
+                                <strong>Tags:</strong>
+                                {% for tag in product.tags|split:"," %}
+                                    <span class="badge bg-secondary me-1">{{ tag.strip }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="tab-pane fade" id="nav-reviews" role="tabpanel">
+                    <div class="p-3">
+                        {% if reviews %}
+                            {% if avg_rating %}
+                                <div class="mb-3">
+                                    <strong>Average Rating:</strong> 
+                                    <span class="text-warning">
+                                        {% for i in "12345"|make_list %}
+                                            {% if forloop.counter <= avg_rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                    ({{ avg_rating|floatformat:1 }}/5.0)
+                                </div>
+                            {% endif %}
+                            
+                            {% for review in reviews %}
+                                <div class="border-bottom pb-3 mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>{{ review.user.username }}</strong>
+                                        <span class="text-warning">
+                                            {% for i in "12345"|make_list %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                                    <p class="mt-2">{{ review.comment }}</p>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>No reviews yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="tab-pane fade" id="nav-seller" role="tabpanel">
+                    <div class="p-3">
+                        <h5>{{ product.seller.business_name }}</h5>
+                        <p><strong>Business Type:</strong> {{ product.seller.get_business_type_display }}</p>
+                        <p><strong>Location:</strong> {{ product.seller.location }}</p>
+                        <p><strong>Address:</strong> {{ product.seller.address }}</p>
+                        {% if product.seller.verified %}
+                            <span class="badge bg-success">Verified Seller</span>
+                        {% endif %}
+                        <div class="mt-3">
+                            <a href="{% url 'marketplace:seller_products' product.seller.id %}" class="btn btn-outline-primary">
+                                View All Products from this Seller
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if related_products %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h4>Related Products</h4>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for related_product in related_products %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if related_product.main_image %}
+                            <img src="{{ related_product.main_image.url }}" class="card-img-top" alt="{{ related_product.name }}">
+                        {% else %}
+                            <img src="{% static 'img/no-image.svg' %}" class="card-img-top" alt="No Image Available">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ related_product.name }}</h5>
+                            <p class="card-text">{{ related_product.description|truncatewords:10 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-primary">${{ related_product.price }}</span>
+                                <a href="{{ related_product.get_absolute_url }}" class="btn btn-sm btn-outline-primary">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeMainImage(imageUrl) {
+    document.getElementById('mainImage').src = imageUrl;
+}
+
+function addToCart() {
+    // Add to cart functionality
+    alert('Product added to cart! (This would integrate with your cart system)');
+}
+
+function contactSeller() {
+    // Contact seller functionality
+    alert('Contact seller functionality would be implemented here');
+}
+</script>
+{% endblock %}

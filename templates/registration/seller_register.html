@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Seller Registration - MSME Marketplace{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-section {
+        background-color: #f8f9fa;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #007bff;
+    }
+    .form-section h5 {
+        color: #007bff;
+        margin-bottom: 15px;
+    }
+    .required::after {
+        content: " *";
+        color: red;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-store"></i> Seller Registration</h4>
+                    <p class="mb-0">Join our marketplace and reach thousands of buyers!</p>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- User Account Information -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-user-circle"></i> Account Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.username.id_for_label }}" class="form-label required">Username</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.username.id_for_label }}" 
+                                               name="{{ form.username.name }}" 
+                                               value="{{ form.username.value|default:'' }}" 
+                                               required>
+                                        {% if form.username.errors %}
+                                            <div class="invalid-feedback">{{ form.username.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.email.id_for_label }}" class="form-label required">Email</label>
+                                        <input type="email" 
+                                               class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.email.id_for_label }}" 
+                                               name="{{ form.email.name }}" 
+                                               value="{{ form.email.value|default:'' }}" 
+                                               required>
+                                        {% if form.email.errors %}
+                                            <div class="invalid-feedback">{{ form.email.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.password1.id_for_label }}" class="form-label required">Password</label>
+                                        <input type="password" 
+                                               class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.password1.id_for_label }}" 
+                                               name="{{ form.password1.name }}" 
+                                               required>
+                                        {% if form.password1.errors %}
+                                            <div class="invalid-feedback">{{ form.password1.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.password2.id_for_label }}" class="form-label required">Confirm Password</label>
+                                        <input type="password" 
+                                               class="form-control {% if form.password2.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.password2.id_for_label }}" 
+                                               name="{{ form.password2.name }}" 
+                                               required>
+                                        {% if form.password2.errors %}
+                                            <div class="invalid-feedback">{{ form.password2.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.first_name.id_for_label }}" class="form-label required">First Name</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.first_name.id_for_label }}" 
+                                               name="{{ form.first_name.name }}" 
+                                               value="{{ form.first_name.value|default:'' }}" 
+                                               required>
+                                        {% if form.first_name.errors %}
+                                            <div class="invalid-feedback">{{ form.first_name.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.last_name.id_for_label }}" class="form-label required">Last Name</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.last_name.id_for_label }}" 
+                                               name="{{ form.last_name.name }}" 
+                                               value="{{ form.last_name.value|default:'' }}" 
+                                               required>
+                                        {% if form.last_name.errors %}
+                                            <div class="invalid-feedback">{{ form.last_name.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Business Information -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-building"></i> Business Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.business_name.id_for_label }}" class="form-label required">Business Name</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.business_name.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.business_name.id_for_label }}" 
+                                               name="{{ form.business_name.name }}" 
+                                               value="{{ form.business_name.value|default:'' }}" 
+                                               required>
+                                        {% if form.business_name.errors %}
+                                            <div class="invalid-feedback">{{ form.business_name.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.owner_name.id_for_label }}" class="form-label required">Owner Full Name</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.owner_name.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.owner_name.id_for_label }}" 
+                                               name="{{ form.owner_name.name }}" 
+                                               value="{{ form.owner_name.value|default:'' }}" 
+                                               required>
+                                        {% if form.owner_name.errors %}
+                                            <div class="invalid-feedback">{{ form.owner_name.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.gstin.id_for_label }}" class="form-label required">GSTIN Number</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.gstin.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.gstin.id_for_label }}" 
+                                               name="{{ form.gstin.name }}" 
+                                               value="{{ form.gstin.value|default:'' }}" 
+                                               placeholder="15-digit GSTIN number"
+                                               required>
+                                        {% if form.gstin.errors %}
+                                            <div class="invalid-feedback">{{ form.gstin.errors.0 }}</div>
+                                        {% endif %}
+                                        <small class="form-text text-muted">Format: 27AABCT1332L1ZA</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.business_type.id_for_label }}" class="form-label required">Business Type</label>
+                                        <select class="form-select {% if form.business_type.errors %}is-invalid{% endif %}" 
+                                                id="{{ form.business_type.id_for_label }}" 
+                                                name="{{ form.business_type.name }}" 
+                                                required>
+                                            <option value="">Select business type</option>
+                                            {% for value, label in form.business_type.field.choices %}
+                                                <option value="{{ value }}" {% if form.business_type.value == value %}selected{% endif %}>
+                                                    {{ label }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        {% if form.business_type.errors %}
+                                            <div class="invalid-feedback">{{ form.business_type.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.turnover.id_for_label }}" class="form-label required">Annual Turnover (in Crores)</label>
+                                <input type="number" 
+                                       step="0.01" 
+                                       min="2" 
+                                       max="50"
+                                       class="form-control {% if form.turnover.errors %}is-invalid{% endif %}" 
+                                       id="{{ form.turnover.id_for_label }}" 
+                                       name="{{ form.turnover.name }}" 
+                                       value="{{ form.turnover.value|default:'' }}" 
+                                       placeholder="Enter value between ₹2-50 Crores"
+                                       required>
+                                {% if form.turnover.errors %}
+                                    <div class="invalid-feedback">{{ form.turnover.errors.0 }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">{{ form.turnover.help_text }}</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Contact Information -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-address-card"></i> Contact Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.phone.id_for_label }}" class="form-label required">Phone Number</label>
+                                        <input type="tel" 
+                                               class="form-control {% if form.phone.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.phone.id_for_label }}" 
+                                               name="{{ form.phone.name }}" 
+                                               value="{{ form.phone.value|default:'' }}" 
+                                               placeholder="+91-9876543210"
+                                               required>
+                                        {% if form.phone.errors %}
+                                            <div class="invalid-feedback">{{ form.phone.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.pincode.id_for_label }}" class="form-label required">Pincode</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.pincode.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.pincode.id_for_label }}" 
+                                               name="{{ form.pincode.name }}" 
+                                               value="{{ form.pincode.value|default:'' }}" 
+                                               placeholder="400001"
+                                               required>
+                                        {% if form.pincode.errors %}
+                                            <div class="invalid-feedback">{{ form.pincode.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.address.id_for_label }}" class="form-label required">Business Address</label>
+                                <textarea class="form-control {% if form.address.errors %}is-invalid{% endif %}" 
+                                          id="{{ form.address.id_for_label }}" 
+                                          name="{{ form.address.name }}" 
+                                          rows="3" 
+                                          placeholder="Enter complete business address"
+                                          required>{{ form.address.value|default:'' }}</textarea>
+                                {% if form.address.errors %}
+                                    <div class="invalid-feedback">{{ form.address.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.city.id_for_label }}" class="form-label required">City</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.city.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.city.id_for_label }}" 
+                                               name="{{ form.city.name }}" 
+                                               value="{{ form.city.value|default:'' }}" 
+                                               required>
+                                        {% if form.city.errors %}
+                                            <div class="invalid-feedback">{{ form.city.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.state.id_for_label }}" class="form-label required">State</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.state.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.state.id_for_label }}" 
+                                               name="{{ form.state.name }}" 
+                                               value="{{ form.state.value|default:'' }}" 
+                                               required>
+                                        {% if form.state.errors %}
+                                            <div class="invalid-feedback">{{ form.state.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Bank Details -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-university"></i> Bank Details</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.bank_name.id_for_label }}" class="form-label required">Bank Name</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.bank_name.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.bank_name.id_for_label }}" 
+                                               name="{{ form.bank_name.name }}" 
+                                               value="{{ form.bank_name.value|default:'' }}" 
+                                               placeholder="State Bank of India"
+                                               required>
+                                        {% if form.bank_name.errors %}
+                                            <div class="invalid-feedback">{{ form.bank_name.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.account_holder_name.id_for_label }}" class="form-label required">Account Holder Name</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.account_holder_name.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.account_holder_name.id_for_label }}" 
+                                               name="{{ form.account_holder_name.name }}" 
+                                               value="{{ form.account_holder_name.value|default:'' }}" 
+                                               required>
+                                        {% if form.account_holder_name.errors %}
+                                            <div class="invalid-feedback">{{ form.account_holder_name.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.account_number.id_for_label }}" class="form-label required">Account Number</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.account_number.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.account_number.id_for_label }}" 
+                                               name="{{ form.account_number.name }}" 
+                                               value="{{ form.account_number.value|default:'' }}" 
+                                               required>
+                                        {% if form.account_number.errors %}
+                                            <div class="invalid-feedback">{{ form.account_number.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.ifsc_code.id_for_label }}" class="form-label required">IFSC Code</label>
+                                        <input type="text" 
+                                               class="form-control {% if form.ifsc_code.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.ifsc_code.id_for_label }}" 
+                                               name="{{ form.ifsc_code.name }}" 
+                                               value="{{ form.ifsc_code.value|default:'' }}" 
+                                               placeholder="SBIN0001234"
+                                               required>
+                                        {% if form.ifsc_code.errors %}
+                                            <div class="invalid-feedback">{{ form.ifsc_code.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Document Upload -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-file-upload"></i> Document Upload</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.pan_document.id_for_label }}" class="form-label required">PAN Card Document</label>
+                                        <input type="file" 
+                                               class="form-control {% if form.pan_document.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.pan_document.id_for_label }}" 
+                                               name="{{ form.pan_document.name }}" 
+                                               accept=".pdf,.jpg,.jpeg,.png"
+                                               required>
+                                        {% if form.pan_document.errors %}
+                                            <div class="invalid-feedback">{{ form.pan_document.errors.0 }}</div>
+                                        {% endif %}
+                                        <small class="form-text text-muted">Upload PDF, JPG, or PNG file (Max 5MB)</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.gst_certificate.id_for_label }}" class="form-label">GST Certificate (Optional)</label>
+                                        <input type="file" 
+                                               class="form-control {% if form.gst_certificate.errors %}is-invalid{% endif %}" 
+                                               id="{{ form.gst_certificate.id_for_label }}" 
+                                               name="{{ form.gst_certificate.name }}" 
+                                               accept=".pdf,.jpg,.jpeg,.png">
+                                        {% if form.gst_certificate.errors %}
+                                            <div class="invalid-feedback">{{ form.gst_certificate.errors.0 }}</div>
+                                        {% endif %}
+                                        <small class="form-text text-muted">Upload PDF, JPG, or PNG file (Max 5MB)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success btn-lg px-5">
+                                <i class="fas fa-user-plus"></i> Register as Seller
+                            </button>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <p>Already have an account? <a href="{% url 'marketplace:login' %}">Login here</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

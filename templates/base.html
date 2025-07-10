@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MSME Marketplace{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    {% load static %}
+    <link href="{% static 'css/marketplace.css' %}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'marketplace:home' %}">
+                <i class="fas fa-store"></i> MSME Marketplace
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav me-auto">
+                    <a class="nav-link" href="{% url 'marketplace:home' %}">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </div>
+                <div class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        {% if user.seller %}
+                            <a class="nav-link" href="{% url 'marketplace:seller_dashboard' %}">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a class="nav-link" href="{% url 'marketplace:add_product' %}">
+                                <i class="fas fa-plus"></i> Add Product
+                            </a>
+                        {% elif user.buyer %}
+                            <a class="nav-link" href="{% url 'marketplace:buyer_dashboard' %}">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a class="nav-link" href="{% url 'marketplace:add_credit' %}">
+                                <i class="fas fa-credit-card"></i> Add Credit
+                            </a>
+                        {% endif %}
+                        {% if user.is_staff %}
+                            <a class="nav-link" href="{% url 'admin:index' %}">
+                                <i class="fas fa-cog"></i> Admin
+                            </a>
+                        {% endif %}
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'marketplace:logout' %}">Logout</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a class="nav-link" href="{% url 'marketplace:login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="registerDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-plus"></i> Register
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'marketplace:seller_register' %}">As Seller</a></li>
+                                <li><a class="dropdown-item" href="{% url 'marketplace:buyer_register' %}">As Buyer</a></li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>MSME Marketplace</h5>
+                    <p>Empowering small businesses to reach global markets.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; {% now "Y" %} MSME Marketplace. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/marketplace.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
